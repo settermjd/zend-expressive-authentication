@@ -1,0 +1,39 @@
+<?php $this->headTitle('Login'); ?>
+
+<div class="jumbotron">
+    <h1>Login</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4" id="login-div">
+        <?php
+        $form = $this->form;
+        $form->setAttribute('class', 'form-horizontal');
+        $form->prepare();
+        echo $this->form()->openTag($form);
+        ?>
+        <fieldset>
+            <div class="form-group">
+                <?php
+                $element = $form->get('username');
+                echo $this->formLabel($element);
+                echo $this->formText($element);
+                echo $this->formElementErrors($element);
+                ?>
+            </div>
+            <div class="form-group">
+                <?php
+                $element = $form->get('password');
+                echo $this->formLabel($element);
+                echo $this->formPassword($element);
+                echo $this->formElementErrors($element);
+                ?>
+            </div>
+            <div class="form-group">
+                <?php echo $this->formSubmit($form->get('submit')); ?>
+            </div>
+        </fieldset>
+        <?php echo $this->form()->closeTag(); ?>
+    </div>
+</div>
