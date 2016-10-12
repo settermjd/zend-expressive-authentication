@@ -1,0 +1,7 @@
+version: '2'
+
+services:
+    testing:
+        build: ./docker/php/
+        volumes_from:
+            - php
