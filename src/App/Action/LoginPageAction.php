@@ -6,7 +6,9 @@ use App\Repository\UserAuthenticationInterface;
 use PSR7Session\Http\SessionMiddleware;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Teapot\StatusCode\RFC\RFC7231;
 use Zend\Diactoros\Response\HtmlResponse;
+use Zend\Diactoros\Response\RedirectResponse;
 use Zend\Expressive\Router;
 use Zend\Expressive\Template;
 use Zend\Form\Annotation\AnnotationBuilder;
@@ -88,7 +90,10 @@ class LoginPageAction
                     $user->getUsername(),
                     $user->getPassword()
                 ));
-                return $next($request, $response);
+                return new RedirectResponse(
+                    $request->getQueryParams()['redirect_to'],
+                    RFC7231::FOUND
+                );
             } catch (UserAuthenticationException $e) {
                 return $this->renderLoginFormResponse();
             }
