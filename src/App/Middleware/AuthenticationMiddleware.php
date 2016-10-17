@@ -13,7 +13,6 @@ use Zend\Expressive\Template;
 
 class AuthenticationMiddleware
 {
-
     /**
      * @var Router\RouterInterface
      */
