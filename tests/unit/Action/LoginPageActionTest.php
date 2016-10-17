@@ -10,10 +10,11 @@ use PSR7Session\Http\SessionMiddleware;
 use PSR7Session\Session\SessionInterface;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
+use Zend\Diactoros\Uri;
 use Zend\Expressive\Router\RouterInterface;
 use Zend\Expressive\Template\TemplateRendererInterface;
 
-class AuthenticationMiddlewareTest extends Unit
+class LoginPageActionTest extends Unit
 {
     private $userAuthService;
     private $template;
@@ -54,6 +55,9 @@ class AuthenticationMiddlewareTest extends Unit
             ->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE)
             ->willReturn($session->reveal());
         $request
+            ->getUri()
+            ->willReturn(new Uri('http://localhost:8080/'));
+        $request
             ->getMethod()
             ->willReturn('GET');
 
@@ -64,7 +68,7 @@ class AuthenticationMiddlewareTest extends Unit
         });
 
         $this->assertTrue($response instanceof Response, 'incorrect Response object returned');
-        $this->assertSame(200, $response->getStatusCode(), 'incorrect status code set');
+        $this->assertSame(302, $response->getStatusCode(), 'incorrect status code set');
     }
 
     /**
@@ -87,6 +91,9 @@ class AuthenticationMiddlewareTest extends Unit
         $request
             ->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE)
             ->willReturn($session->reveal());
+        $request
+            ->getUri()
+            ->willReturn(new Uri('http://localhost:8080/'));
 
         /** @var \Psr\Http\Message\ResponseInterface $response */
         $response = $action(
@@ -129,6 +136,9 @@ class AuthenticationMiddlewareTest extends Unit
             ->getMethod()
             ->willReturn('POST');
         $request
+            ->getUri()
+            ->willReturn(new Uri('http://localhost:8080/'));
+        $request
             ->getParsedBody()
             ->willReturn($data);
         $this->userAuthService
@@ -141,7 +151,7 @@ class AuthenticationMiddlewareTest extends Unit
             return new ServerRequest([], [], '/', 'GET');
         });
 
-        $this->assertTrue($response instanceof ServerRequestInterface, 'incorrect object');
+        $this->assertTrue($response instanceof Response\RedirectResponse, 'Should have returned a RedirectResponse object');
     }
 
     /**
@@ -176,6 +186,9 @@ class AuthenticationMiddlewareTest extends Unit
             ->getMethod()
             ->willReturn('POST');
         $request
+            ->getUri()
+            ->willReturn(new Uri('http://localhost:8080/'));
+        $request
             ->getParsedBody()
             ->willReturn($data);
         $this->userAuthService
@@ -188,6 +201,6 @@ class AuthenticationMiddlewareTest extends Unit
         );
 
         $this->assertTrue($response instanceof Response, 'incorrect Response object');
-        $this->assertSame(200, $response->getStatusCode(), 'incorrect status code set');
+        $this->assertSame(302, $response->getStatusCode(), 'incorrect status code set');
     }
 }
