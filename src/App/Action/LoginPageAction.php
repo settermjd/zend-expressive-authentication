@@ -112,11 +112,10 @@ class LoginPageAction
      */
     private function doValidation(ServerRequestInterface $request)
     {
-        $this->form
+        return $this->form
             ->bind($this->authEntity)
-            ->setData($request->getParsedBody());
-
-        return $this->form->isValid();
+            ->setData($request->getParsedBody())
+            ->isValid();
     }
 
     /**
