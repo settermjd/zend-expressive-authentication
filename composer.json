@@ -26,7 +26,8 @@
         "zendframework/zend-expressive-zendviewrenderer": "^1.0",
         "zendframework/zend-form": "^2.9",
         "zendframework/zend-servicemanager": "^2.7.3 || ^3.0",
-        "zendframework/zend-stdlib": "^2.7 || ^3.0"
+        "zendframework/zend-stdlib": "^2.7 || ^3.0",
+        "sandrokeil/interop-config": "^1.0"
     },
     "require-dev": {
         "filp/whoops": "^1.1 || ^2.0",
