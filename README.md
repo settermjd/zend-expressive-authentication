@@ -2,14 +2,6 @@
 
 This project provides PSR-7-compliant authentication middleware.
 
-[![Build Status](https://img.shields.io/travis/PHP-DI/PHP-DI/master.svg?style=flat-square)](https://travis-ci.org/PHP-DI/PHP-DI)
-[![Coverage Status](https://img.shields.io/coveralls/PHP-DI/PHP-DI/master.svg?style=flat-square)](https://coveralls.io/r/PHP-DI/PHP-DI?branch=master)
-[![Scrutinizer Code Quality](https://img.shields.io/scrutinizer/g/PHP-DI/PHP-DI.svg?style=flat-square)](https://scrutinizer-ci.com/g/PHP-DI/PHP-DI/?branch=master)
-[![Latest Version](https://img.shields.io/github/release/PHP-DI/PHP-DI.svg?style=flat-square)](https://packagist.org/packages/PHP-DI/php-di)
-[![Total Downloads](https://img.shields.io/packagist/dt/PHP-DI/PHP-DI.svg?style=flat-square)](https://packagist.org/packages/PHP-DI/php-di)
-
-Here is an additional quick introduction, if necessary.
-
 ## Why?
 
 This repository serves two purposes. Firstly, it serves as a supporting code repository for my talk [Build Powerful and Flexible Micro-Applications, with Zend Expressive](https://goo.gl/5Bysd2). And secondly, it provides a simplified set of PSR-7-compliant authentication middleware for a Zend Expressive (or other PSR-7) application.
@@ -30,7 +22,7 @@ Alternatively, to integrate it with a PSR-7 compliant application, make use of C
 composer require settermjd/zend-expressive-authentication
 ```
 
-As well as making the library available to your application as a core dependency, it will also copy the configuration files in place, assuming that you’re using it with Zend Expressive, and that your project directory structure follows the convention espoused by [the Zend Expressive Skeleton Installer](http://masterzendframework.com/...).
+As well as making the library available to your application as a core dependency, it will also copy the configuration files in place, assuming that you’re using it with Zend Expressive, and that your project directory structure follows the convention espoused by [the Zend Expressive Skeleton Installer](http://www.masterzendframework.com/zend-expressive-introduction/).
 
 Currently, Zend Expressive is the only supported framework. Instructions for other PSR-7-compliant frameworks to follow.
 
