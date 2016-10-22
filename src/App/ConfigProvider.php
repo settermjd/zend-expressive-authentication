@@ -30,6 +30,19 @@ class ConfigProvider
         return [
             'dependencies' => $this->getDependencyConfig(),
             'routes' => $this->getRouteConfig(),
+            'app' => $this->getAppConfig()
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getAppConfig()
+    {
+        return [
+            'authentication' => [
+                'default_redirect_to' => '/',
+            ]
         ];
     }
 

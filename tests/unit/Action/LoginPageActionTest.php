@@ -1,5 +1,6 @@
 <?php
 
+use App\Action\LoginPageAction;
 use App\Middleware\AuthenticationMiddleware;
 use App\Entity\LoginUser;
 use App\Repository\UserAuthenticationInterface;
@@ -41,9 +42,7 @@ class LoginPageActionTest extends Unit
     {
         $action = new AuthenticationMiddleware(
             $this->router->reveal(),
-            $this->template->reveal(),
-            $this->userAuthService->reveal(),
-            new LoginUser()
+            $this->template->reveal()
         );
 
         $session = $this->prophesize(SessionInterface::class);
@@ -78,9 +77,7 @@ class LoginPageActionTest extends Unit
     {
         $action = new AuthenticationMiddleware(
             $this->router->reveal(),
-            $this->template->reveal(),
-            $this->userAuthService->reveal(),
-            new LoginUser()
+            $this->template->reveal()
         );
 
         $session = $this->prophesize(SessionInterface::class);
@@ -111,9 +108,7 @@ class LoginPageActionTest extends Unit
     {
         $action = new AuthenticationMiddleware(
             $this->router->reveal(),
-            $this->template->reveal(),
-            $this->userAuthService->reveal(),
-            new LoginUser()
+            $this->template->reveal()
         );
 
         $data = [
@@ -121,7 +116,6 @@ class LoginPageActionTest extends Unit
             'password' => 'password'
         ];
 
-        $request = $this->prophesize(ServerRequest::class);
         $session = $this->prophesize(SessionInterface::class);
         $session
             ->get('id')
@@ -129,6 +123,8 @@ class LoginPageActionTest extends Unit
         $session
             ->set('id', 1)
             ->willReturn(null);
+
+        $request = $this->prophesize(ServerRequest::class);
         $request
             ->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE)
             ->willReturn($session->reveal());
@@ -151,7 +147,67 @@ class LoginPageActionTest extends Unit
             return new ServerRequest([], [], '/', 'GET');
         });
 
-        $this->assertTrue($response instanceof Response\RedirectResponse, 'Should have returned a RedirectResponse object');
+        $this->assertTrue(
+            $response instanceof Response\RedirectResponse,
+            'Should have returned a RedirectResponse object'
+        );
+    }
+
+    public function testRedirectsToDefaultRouteIfNoRedirectRouteDiscovered()
+    {
+        $defaultRedirect = '/';
+        $action = new LoginPageAction(
+            $this->router->reveal(),
+            $this->template->reveal(),
+            $this->userAuthService->reveal(),
+            new LoginUser(),
+            $defaultRedirect
+        );
+
+        $data = [
+            'username' => 'username',
+            'password' => 'password'
+        ];
+
+        $session = $this->prophesize(SessionInterface::class);
+        $session
+            ->set('id', 1)
+            ->willReturn(null);
+
+        $request = $this->prophesize(ServerRequest::class);
+        $request
+            ->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE)
+            ->willReturn($session->reveal());
+        $request
+            ->getMethod()
+            ->willReturn('POST');
+        $request
+            ->getParsedBody()
+            ->willReturn($data);
+        $request
+            ->getQueryParams()
+            ->willReturn([]);
+
+        $this->userAuthService
+            ->authenticateUser($data['username'], $data['password'])
+            ->willReturn(1);
+
+        /** @var \Psr\Http\Message\ResponseInterface $response */
+        $response = $action(
+            $request->reveal(), new Response(), function () {
+            return new ServerRequest([], [], '/', 'GET');
+        });
+
+        $this->assertTrue(
+            $response instanceof Response\RedirectResponse,
+            'Should have returned a RedirectResponse object'
+        );
+
+        $this->assertSame(
+            $defaultRedirect,
+            $response->getHeader('Location')[0],
+            'redirected to incorrect route'
+        );
     }
 
     /**
@@ -161,9 +217,7 @@ class LoginPageActionTest extends Unit
     {
         $action = new AuthenticationMiddleware(
             $this->router->reveal(),
-            $this->template->reveal(),
-            $this->userAuthService->reveal(),
-            new LoginUser()
+            $this->template->reveal()
         );
 
         $data = [

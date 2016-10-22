@@ -51,23 +51,31 @@ class LoginPageAction
     private $authEntity;
 
     /**
+     * @var string
+     */
+    private $defaultRedirectUri;
+
+    /**
      * LoginPageAction constructor.
      * @param Router\RouterInterface $router
      * @param Template\TemplateRendererInterface|null $template
      * @param UserAuthenticationInterface $userAuthenticationService
      * @param AuthUserInterface $authenticationEntity
+     * @param string $defaultRedirectUri
      */
     public function __construct(
         Router\RouterInterface $router,
         Template\TemplateRendererInterface $template,
         UserAuthenticationInterface $userAuthenticationService,
-        AuthUserInterface $authenticationEntity
+        AuthUserInterface $authenticationEntity,
+        $defaultRedirectUri
     ) {
         $this->router = $router;
         $this->template = $template;
         $this->authEntity = $authenticationEntity;
         $this->form = (new AnnotationBuilder())->createForm($this->authEntity);
         $this->userAuthenticationService = $userAuthenticationService;
+        $this->defaultRedirectUri = $defaultRedirectUri;
     }
 
     /**
@@ -91,7 +99,7 @@ class LoginPageAction
                     $user->getPassword()
                 ));
                 return new RedirectResponse(
-                    $request->getQueryParams()['redirect_to'],
+                    $this->getRedirectUri($request),
                     RFC7231::FOUND
                 );
             } catch (UserAuthenticationException $e) {
@@ -103,9 +111,9 @@ class LoginPageAction
     }
 
     /**
-     * Setup and perform form validation
+     * Setup and perform form-based validation
      *
-     * It's a simple utility method to make the __invoke method easier to read
+     * It's a utility method to make the __invoke method easier to read
      *
      * @param ServerRequestInterface $request
      * @return bool
@@ -119,6 +127,10 @@ class LoginPageAction
     }
 
     /**
+     * Render an HTML reponse, containing the login form
+     *
+     * Provide the functionality required to let a user authenticate, based on using an HTML form.
+     *
      * @return HtmlResponse
      */
     private function renderLoginFormResponse()
@@ -126,5 +138,24 @@ class LoginPageAction
         return new HtmlResponse($this->template->render(self::PAGE_TEMPLATE, [
             'form' => $this->form,
         ]));
+    }
+
+    /**
+     * Get the URL to redirect the user to
+     *
+     * The value returned here is where to send the user to after a successful authentication has
+     * taken place. The intent is to avoid the user being redirected to a generic route after
+     * login, requiring them to have to specify where they want to navigate to.
+     *
+     * @param ServerRequestInterface $request
+     * @return string
+     */
+    private function getRedirectUri(ServerRequestInterface $request)
+    {
+        if (array_key_exists('redirect_to', $request->getQueryParams())) {
+            return $request->getQueryParams()['redirect_to'];
+        }
+
+        return $this->defaultRedirectUri;
     }
 }
