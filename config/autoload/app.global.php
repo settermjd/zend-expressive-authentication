@@ -1,0 +1,1 @@
+app.global.php.dist
