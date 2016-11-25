@@ -5,5 +5,5 @@ clover.xml
 coveralls-upload.json
 phpunit.xml
 vendor/
-
+public
 tests/_output/*
