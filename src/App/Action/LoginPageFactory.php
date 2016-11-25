@@ -4,13 +4,14 @@ namespace App\Action;
 use App\Entity\LoginUser;
 use App\Repository\UserAuthenticationInterface;
 use Interop\Config\ConfigurationTrait;
-use Interop\Config\RequiresConfig;
+use Interop\Config\ProvidesDefaultOptions;
 use Interop\Config\RequiresConfigId;
+use Interop\Config\RequiresMandatoryOptions;
 use Interop\Container\ContainerInterface;
 use Zend\Expressive\Router\RouterInterface;
 use Zend\Expressive\Template\TemplateRendererInterface;
 
-class LoginPageFactory implements RequiresConfigId
+class LoginPageFactory implements RequiresConfigId, ProvidesDefaultOptions, RequiresMandatoryOptions
 {
     use ConfigurationTrait;
 
@@ -18,7 +19,21 @@ class LoginPageFactory implements RequiresConfigId
     {
         return ['app'];
     }
-    
+
+    public function mandatoryOptions()
+    {
+        return [
+            'default_redirect_to'
+        ];
+    }
+
+    public function defaultOptions()
+    {
+        return [
+            'status_code' => 302,
+        ];
+    }
+
     public function __invoke(ContainerInterface $container)
     {
         $router   = $container->get(RouterInterface::class);
@@ -28,7 +43,9 @@ class LoginPageFactory implements RequiresConfigId
         $userRepository = $container->get(UserAuthenticationInterface::class);
         $userEntity = new LoginUser();
 
-        $authenticationOptions = $this->options($container->get('config'), 'authentication');
+        if ($this->canRetrieveOptions($container->get('config'), 'authentication')) {
+            $authenticationOptions = $this->options($container->get('config'), 'authentication');
+        }
 
         return new LoginPageAction(
             $router,
