@@ -6,9 +6,10 @@ use App\Action\LoginPageAction;
 use App\Action\LoginPageFactory;
 use App\Middleware\AuthenticationMiddleware;
 use App\Middleware\AuthenticationMiddlewareFactory;
-use App\Repository\UserAuthenticationFactory;
 use App\Repository\UserAuthenticationInterface;
-use App\Repository\UserTableAuthentication;
+use App\Service\UserAuthenticationServiceClientFactory;
+use App\Service\UserRestfulAuthenticationServiceFactory;
+use GuzzleHttp\ClientInterface;
 
 /**
  * Class ConfigProvider
@@ -42,7 +43,12 @@ class ConfigProvider
         return [
             'authentication' => [
                 'default_redirect_to' => '/',
-            ]
+                'service' => [
+                    'host' => 'http://127.0.0.1',
+                    'port' => 18080,
+                    'base_path' => '/',
+                ]
+            ],
         ];
     }
 
@@ -74,22 +80,18 @@ class ConfigProvider
             'factories' => [
                 AuthenticationMiddleware::class => AuthenticationMiddlewareFactory::class,
                 LoginPageAction::class => LoginPageFactory::class,
+
                 /**
                  * Register a class that will handle the user authentication.
-                 * The one registered here provides only a generic sample implementation
-                 * and is not meant to be taken seriously.
-                 *
-                 * UserTableAuthentication::class => UserAuthenticationFactory::class,
                  * */
-            ],
-            'aliases' => [
+                UserAuthenticationInterface::class => UserRestfulAuthenticationServiceFactory::class,
+
                 /**
-                 * This is a sample setup whereby the specific implementation is never
-                 * referenced anywhere in the codebase, instead using a generic alias.
-                 *
-                 * UserAuthenticationInterface::class => UserTableAuthentication::class
-                 * */
-            ]
+                 * Register a remote service client
+                 */
+                ClientInterface::class => UserAuthenticationServiceClientFactory::class
+            ],
+            'aliases' => []
         ];
     }
 }
