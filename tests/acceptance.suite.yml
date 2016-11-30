@@ -10,3 +10,6 @@ modules:
         - PhpBrowser:
             url: https://expressive.app
         - \Helper\Acceptance
+        - Phiremock:
+            host: 127.0.0.1
+            port: 18080
