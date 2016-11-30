@@ -2,8 +2,11 @@
 
 namespace App\Service;
 
+use App\Repository\UserAuthenticationException;
 use App\Repository\UserAuthenticationInterface;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Psr7;
 
 /**
  * Class UserRestfulAuthenticationService
@@ -35,11 +38,29 @@ class UserRestfulAuthenticationService implements UserAuthenticationInterface
      */
     public function authenticateUser($username, $password)
     {
-        $result = json_decode($this->client->request('POST', '/auth', [
-            'username' => $username,
-            'password' => $password
-        ]), true);
+        try {
+            $response = $this->client->request('POST', '/auth', [
+                'form_params' => [
+                    'username' => $username,
+                    'password' => $password
+                ],
+                'debug' => true
+            ]);
+        } catch (ClientException $e) {
+            if ($e->hasResponse()) {
+                throw new UserAuthenticationException(
+                    $e->getResponse()->getBody()->getContents(),
+                    (int)$e->getResponse()->getStatusCode()
+                );
+            }
+        }
 
-        return $result['userId'];
+        if ($response->getStatusCode() === 200) {
+            $body = json_decode($response->getBody()->getContents(), true);
+
+            if (is_array($body) && isset($body['userId'])) {
+                return (int)$body['userId'];
+            }
+        }
     }
 }
