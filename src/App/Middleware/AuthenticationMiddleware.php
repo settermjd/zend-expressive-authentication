@@ -11,6 +11,10 @@ use Zend\Diactoros\Response\RedirectResponse;
 use Zend\Expressive\Router;
 use Zend\Expressive\Template;
 
+/**
+ * Class AuthenticationMiddleware
+ * @package App\Middleware
+ */
 class AuthenticationMiddleware
 {
     /**
@@ -62,6 +66,12 @@ class AuthenticationMiddleware
         return $next($request, $response);
     }
 
+    /**
+     * Retrieve the current request
+     *
+     * @param ServerRequestInterface $request
+     * @return string
+     */
     private function getCurrentRequest(ServerRequestInterface $request)
     {
         /** @var UriInterface $uri */
